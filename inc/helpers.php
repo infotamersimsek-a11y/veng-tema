@@ -184,6 +184,20 @@ function veng_get_market_rates() {
  * sayısı $count*3'ten büyükse hepsini görebilmek için), az bulunursa döngü sessizce daha
  * az slide ile devam eder.
  */
+/**
+ * Standart reklam alanı yer tutucusu: beyaz zemin, mor "VENG RADYO" yazısı, kesikli
+ * çerçeve. Site sahibinin isteğiyle sayısı kasıtlı az tutuluyor (sadece 2 yerde
+ * kullanılıyor — ana sayfa slider altı + kenar çubuğu) ve kenar çubuğundaki mobilde
+ * hiç görünmüyor ("mobilde çok olmasın" — 1 masaüstü + 1 mobil görünür slot kalıyor).
+ */
+function veng_render_ad_slot( $extra_class = '' ) {
+	?>
+	<div class="veng-ad-slot <?php echo esc_attr( $extra_class ); ?>">
+		<span class="veng-ad-slot-label">VENG RADYO</span>
+	</div>
+	<?php
+}
+
 function veng_render_hero_slider( $count = 20 ) {
 	$candidates = get_posts( array( 'post_type' => 'post', 'posts_per_page' => 100, 'orderby' => 'date', 'order' => 'DESC', 'meta_key' => '_thumbnail_id' ) );
 	$posts = array();
@@ -330,6 +344,8 @@ function veng_render_sidebar() {
 	?>
 	<aside style="display:flex;flex-direction:column;gap:20px;">
 		<?php veng_render_hourly_digest_widget(); ?>
+
+		<?php veng_render_ad_slot( 'veng-ad-slot-sidebar' ); ?>
 
 		<?php if ( $weather ) : ?>
 		<div class="card sidebar-hide-mobile">

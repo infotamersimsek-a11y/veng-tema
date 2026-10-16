@@ -7,6 +7,8 @@
 
 		<?php veng_render_hero_slider(); ?>
 
+		<?php veng_render_ad_slot(); ?>
+
 		<?php
 		// orderby=id yalnızca en eski oluşturulan 6 kategoriyi gösteriyordu. orderby=count da
 		// güvenilmezdi: WordPress'in kategori sayısı önbelleği, toplu SQL silme işlemlerinden
