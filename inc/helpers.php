@@ -111,7 +111,12 @@ function veng_get_weather( $city = null ) {
 	return $result;
 }
 
-/** Piyasa verisi (USD/EUR ücretsiz API, altın/BIST için opsiyonel ücretli key .env benzeri wp-config sabitleri ile) */
+/**
+ * Piyasa verisi — döviz/altın/BIST Bloomberg HT'den (bloomberght.com) canlı çekilir, site
+ * sahibinin güvendiği kaynak bu. Sayfaları SSR (sunucu tarafında render) olduğu için
+ * normal bir istekle HTML içine gömülü değerler regex'le çekilebiliyor — API anahtarı
+ * gerekmiyor. Bitcoin CoinGecko'da kalıyor (kripto için zaten uzmanlaşmış, güvenilir kaynak).
+ */
 function veng_get_market_rates() {
 	$cache_key = 'veng_market_rates';
 	$cached = get_transient( $cache_key );
@@ -120,15 +125,24 @@ function veng_get_market_rates() {
 	}
 
 	$rates = array();
+	$ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-	$fx = wp_remote_get( 'https://open.er-api.com/v6/latest/USD', array( 'timeout' => 5 ) );
+	// Döviz çevirici sayfası TÜM para birimlerini dolar bazlı (data-ask = "1 USD kaç X eder")
+	// tek bir <select>'te SSR ediyor — USD/TRY doğrudan, EUR/TRY çapraz kur (TRY/USD ÷ EUR/USD) ile.
+	$fx = wp_remote_get( 'https://www.bloomberght.com/doviz/dolar', array( 'timeout' => 6, 'user-agent' => $ua ) );
 	if ( ! is_wp_error( $fx ) ) {
-		$fx_data = json_decode( wp_remote_retrieve_body( $fx ), true );
-		if ( ! empty( $fx_data['rates']['TRY'] ) && ! empty( $fx_data['rates']['EUR'] ) ) {
-			$usd_try = $fx_data['rates']['TRY'];
-			$eur_try = $usd_try / $fx_data['rates']['EUR'];
-			$rates[] = array( 'label' => 'USD/TRY', 'value' => number_format( $usd_try, 2 ), 'live' => true );
-			$rates[] = array( 'label' => 'EUR/TRY', 'value' => number_format( $eur_try, 2 ), 'live' => true );
+		$body = wp_remote_retrieve_body( $fx );
+		$try_per_usd = null;
+		$eur_per_usd = null;
+		if ( preg_match( '/value="TÜRK LİRASI" data-ask="([0-9.]+)"/', $body, $m ) ) {
+			$try_per_usd = (float) $m[1];
+		}
+		if ( preg_match( '/value="EURO" data-ask="([0-9.]+)"/', $body, $m ) ) {
+			$eur_per_usd = (float) $m[1];
+		}
+		if ( $try_per_usd && $eur_per_usd ) {
+			$rates[] = array( 'label' => 'USD/TRY', 'value' => number_format( $try_per_usd, 2 ), 'live' => true );
+			$rates[] = array( 'label' => 'EUR/TRY', 'value' => number_format( $try_per_usd / $eur_per_usd, 2 ), 'live' => true );
 		}
 	}
 	if ( count( $rates ) < 2 ) {
@@ -149,20 +163,30 @@ function veng_get_market_rates() {
 	}
 	$rates[] = array( 'label' => 'Bitcoin', 'value' => $btc_val, 'live' => $btc_live );
 
-	// Gerçek zamanlı Gram Altın / BIST 100 için ücretli API key eklenebilir: wp-config.php içine
-	// define('VENG_GOLD_API_KEY', '...'); tanımlayıp burada goldapi.io benzeri servise bağlanabilirsiniz.
-	if ( defined( 'VENG_GOLD_API_KEY' ) && VENG_GOLD_API_KEY ) {
-		$gold = wp_remote_get( 'https://www.goldapi.io/api/XAU/TRY', array( 'timeout' => 5, 'headers' => array( 'x-access-token' => VENG_GOLD_API_KEY ) ) );
-		$gold_data = ! is_wp_error( $gold ) ? json_decode( wp_remote_retrieve_body( $gold ), true ) : null;
-		if ( ! empty( $gold_data['price'] ) ) {
-			$rates[] = array( 'label' => 'Gram Altın', 'value' => '₺' . number_format( $gold_data['price'] / 31.1, 0, ',', '.' ), 'live' => true );
-		} else {
-			$rates[] = array( 'label' => 'Gram Altın', 'value' => '₺2.850 (demo)', 'live' => false );
+	// Gram Altın: aynı çevirici desenine sahip sayfada "GRAM ALTIN TL/GR" seçeneğinin value'su.
+	$gold_val = '₺2.850 (demo)'; $gold_live = false;
+	$gold = wp_remote_get( 'https://www.bloomberght.com/altin/gram-altin', array( 'timeout' => 6, 'user-agent' => $ua ) );
+	if ( ! is_wp_error( $gold ) ) {
+		$body = wp_remote_retrieve_body( $gold );
+		if ( preg_match( '/value="([0-9.]+)">\s*GRAM ALTIN TL\/GR/', $body, $m ) ) {
+			$gold_val = '₺' . number_format( (float) $m[1], 0, ',', '.' );
+			$gold_live = true;
 		}
-	} else {
-		$rates[] = array( 'label' => 'Gram Altın', 'value' => '₺2.850 (demo)', 'live' => false );
 	}
-	$rates[] = array( 'label' => 'BIST 100', 'value' => '10.245 (demo)', 'live' => false );
+	$rates[] = array( 'label' => 'Gram Altın', 'value' => $gold_val, 'live' => $gold_live );
+
+	// BIST 100: /borsa listesindeki "BIST 100" satırının hemen yanındaki anlık fiyat hücresi.
+	$bist_val = '10.245 (demo)'; $bist_live = false;
+	$bist = wp_remote_get( 'https://www.bloomberght.com/borsa', array( 'timeout' => 6, 'user-agent' => $ua ) );
+	if ( ! is_wp_error( $bist ) ) {
+		$body = wp_remote_retrieve_body( $bist );
+		$pos = strpos( $body, 'title="BIST 100"' );
+		if ( false !== $pos && preg_match( '/class="lastPrice[^"]*">\s*([0-9.,]+)/', substr( $body, $pos, 700 ), $m ) ) {
+			$bist_val = trim( $m[1] );
+			$bist_live = true;
+		}
+	}
+	$rates[] = array( 'label' => 'BIST 100', 'value' => $bist_val, 'live' => $bist_live );
 
 	set_transient( $cache_key, $rates, 15 * MINUTE_IN_SECONDS );
 	return $rates;
