@@ -66,6 +66,10 @@ document.addEventListener('DOMContentLoaded', function () {
           heroStartAuto();
         });
       });
+      var heroPrev = heroSlider.querySelector('.hero-arrow-prev');
+      var heroNext = heroSlider.querySelector('.hero-arrow-next');
+      if (heroPrev) { heroPrev.addEventListener('click', function () { heroGoTo(heroCurrent - 1); heroStartAuto(); }); }
+      if (heroNext) { heroNext.addEventListener('click', function () { heroGoTo(heroCurrent + 1); heroStartAuto(); }); }
       heroSlider.addEventListener('mouseenter', heroStopAuto);
       heroSlider.addEventListener('mouseleave', heroStartAuto);
 

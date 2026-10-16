@@ -212,6 +212,8 @@ function veng_render_hero_slider( $count = 20 ) {
 				</a>
 			<?php endforeach; ?>
 			<?php if ( count( $posts ) > 1 ) : ?>
+			<button type="button" class="hero-arrow hero-arrow-prev" aria-label="Önceki manşet">‹</button>
+			<button type="button" class="hero-arrow hero-arrow-next" aria-label="Sonraki manşet">›</button>
 			<div class="hero-dots" role="tablist" aria-label="Manşet haberleri">
 				<?php foreach ( $posts as $i => $p ) : ?>
 					<button type="button" class="hero-dot<?php echo 0 === $i ? ' is-active' : ''; ?>" data-slide="<?php echo intval( $i ); ?>" aria-label="<?php echo esc_attr( ( $i + 1 ) . '. manşet: ' . get_the_title( $p ) ); ?>"><?php echo intval( $i + 1 ); ?></button>

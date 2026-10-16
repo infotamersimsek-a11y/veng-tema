@@ -224,12 +224,22 @@ body.admin-bar .site-menu { top: 32px; }
 .hero-dot { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: var(--fg); font-weight: 700; font-size: 13px; cursor: pointer; transition: background .15s ease, color .15s ease; }
 .hero-dot.is-active { background: var(--theme); border-color: var(--theme); color: #fff; }
 
+/* Ok butonları: masaüstünde gizli (numaralı noktalar kalıyor), mobilde noktaların yerini alıyor. */
+.hero-arrow {
+  display: none; position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: rgba(10,6,20,.45); color: #fff; font-size: 20px; line-height: 1;
+  align-items: center; justify-content: center; cursor: pointer; z-index: 2;
+}
+.hero-arrow-prev { left: 10px; }
+.hero-arrow-next { right: 10px; }
+
 @media (max-width: 767px) {
   .hero-slide img, .hero-slide .no-img-fill { aspect-ratio: 16/10; }
   .hero-slide-text { padding: 16px 14px 12px; }
   .hero-slide-text h2 { font-size: 18px; }
-  .hero-dots { display: grid; grid-template-columns: repeat(8, 1fr); justify-items: center; row-gap: 6px; }
-  .hero-dot { width: 26px; height: 26px; font-size: 11px; }
+  .hero-dots { display: none; }
+  .hero-arrow { display: flex; }
 }
 
 .hcard { display: flex; gap: 12px; }

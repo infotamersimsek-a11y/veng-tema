@@ -14,14 +14,38 @@
 		// kategori önbellekte "70" görünebiliyor) — bu da hangi 6 kategorinin seçildiğini
 		// bozuyordu. Bunun yerine GERÇEK, o anki yayınlanmış yazı sayısını doğrudan sorgula.
 		global $wpdb;
-		$top_cat_ids = $wpdb->get_col(
+		$all_cat_ids = $wpdb->get_col(
 			"SELECT tt.term_id FROM {$wpdb->term_taxonomy} tt
 			 INNER JOIN {$wpdb->term_relationships} tr ON tr.term_taxonomy_id = tt.term_taxonomy_id
 			 INNER JOIN {$wpdb->posts} p ON p.ID = tr.object_id
 			 WHERE tt.taxonomy = 'category' AND p.post_status = 'publish' AND p.post_type = 'post'
-			 GROUP BY tt.term_id ORDER BY COUNT(*) DESC LIMIT 6"
+			 GROUP BY tt.term_id ORDER BY COUNT(*) DESC"
 		);
-		$top_cats = array_filter( array_map( 'get_category', $top_cat_ids ) );
+		$all_cats = array_filter( array_map( 'get_category', $all_cat_ids ) );
+
+		// Sabit sıra: önce Politika, sonra Spor, sonra Ekonomi, kalan yerler en çok yazılı
+		// diğer kategorilerle dolar (slider altında dünya haberleri yerine önce politika
+		// gelsin istendi — bu sıra masaüstü/mobil ayrımı yapmadan aynı listeden geldiği
+		// için ikisinde de geçerli).
+		$priority_slugs = array( 'siyaset', 'politika', 'spor', 'ekonomi' );
+		$top_cats = array();
+		foreach ( array( 'siyaset', 'spor', 'ekonomi' ) as $slug ) {
+			foreach ( $all_cats as $cat ) {
+				if ( $cat->slug === $slug || ( 'siyaset' === $slug && 'politika' === $cat->slug ) ) {
+					$top_cats[] = $cat;
+					break;
+				}
+			}
+		}
+		foreach ( $all_cats as $cat ) {
+			if ( count( $top_cats ) >= 6 ) {
+				break;
+			}
+			if ( in_array( $cat->slug, $priority_slugs, true ) ) {
+				continue;
+			}
+			$top_cats[] = $cat;
+		}
 		foreach ( $top_cats as $cat ) :
 			$cat_q = new WP_Query( array( 'post_type' => 'post', 'posts_per_page' => 6, 'cat' => $cat->term_id ) );
 			if ( ! $cat_q->have_posts() ) { wp_reset_postdata(); continue; }
