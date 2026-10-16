@@ -62,7 +62,7 @@
 					);
 					foreach ( $veng_footer_pages as $veng_slug => $veng_label ) :
 						$veng_page = get_page_by_path( $veng_slug );
-						if ( ! $veng_page ) continue;
+						if ( ! $veng_page || 'publish' !== $veng_page->post_status ) continue;
 						?>
 						<li><a href="<?php echo esc_url( get_permalink( $veng_page ) ); ?>"><?php echo esc_html( $veng_label ); ?></a></li>
 					<?php endforeach; ?>
