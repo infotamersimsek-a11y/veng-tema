@@ -133,6 +133,19 @@ function veng_meta_description_and_canonical() {
 }
 add_action( 'wp_head', 'veng_meta_description_and_canonical', 3 );
 
+/**
+ * İçeriği olmayan arşiv sayfaları (ör. hiç galeri eklenmemiş Foto Galeri arşivi) Google'a
+ * "noindex" işareti verir — Google bu tür boş sayfaları snippet için seçince sayfa
+ * başlığındaki gerçek içerik yerine en yakın görünür metni (üstteki tarih/piyasa şeridi
+ * gibi) kullanıyordu, bu da arama sonucunda düzensiz/amatör görünüyordu.
+ */
+function veng_noindex_empty_archives() {
+	if ( ( is_post_type_archive() || is_category() || is_tax() ) && ! have_posts() ) {
+		echo '<meta name="robots" content="noindex,follow">' . "\n";
+	}
+}
+add_action( 'wp_head', 'veng_noindex_empty_archives', 2 );
+
 function veng_og_meta_tags() {
 	$title       = wp_get_document_title();
 	$description = get_bloginfo( 'description' );

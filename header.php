@@ -17,7 +17,9 @@
 				if ( $url ) : ?>
 				<a href="<?php echo esc_url( $url ); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr( $label ); ?>"><?php echo esc_html( $label ); ?></a>
 			<?php endif; endforeach; ?>
-			<a href="<?php echo esc_url( home_url( '/wp-admin/' ) ); ?>">Yönetim Paneli</a>
+			<?php if ( is_user_logged_in() ) : ?>
+				<a href="<?php echo esc_url( home_url( '/wp-admin/' ) ); ?>">Yönetim Paneli</a>
+			<?php endif; ?>
 		</div>
 	</div>
 
