@@ -144,11 +144,20 @@ add_action( 'wp_head', 'veng_meta_description_and_canonical', 3 );
  * gibi) kullanıyordu, bu da arama sonucunda düzensiz/amatör görünüyordu.
  */
 function veng_noindex_empty_archives() {
-	if ( ( is_post_type_archive() || is_category() || is_tax() ) && ! have_posts() ) {
+	if ( is_404() || ( ( is_post_type_archive() || is_category() || is_tax() ) && ! have_posts() ) ) {
 		echo '<meta name="robots" content="noindex,follow">' . "\n";
 	}
 }
 add_action( 'wp_head', 'veng_noindex_empty_archives', 2 );
+
+/**
+ * Google Discover, görsel önizlemesini büyük boyutta göstermek için bu direktifi
+ * ister (eksikse küçük/varsayılan önizleme kullanır, Discover trafiği azalır).
+ */
+function veng_max_image_preview() {
+	echo '<meta name="robots" content="max-image-preview:large">' . "\n";
+}
+add_action( 'wp_head', 'veng_max_image_preview', 1 );
 
 function veng_og_meta_tags() {
 	$title       = wp_get_document_title();

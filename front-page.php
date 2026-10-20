@@ -28,8 +28,11 @@
 		// Sabit sıra: önce Politika, sonra Spor, sonra Ekonomi, kalan yerler en çok yazılı
 		// diğer kategorilerle dolar (slider altında dünya haberleri yerine önce politika
 		// gelsin istendi — bu sıra masaüstü/mobil ayrımı yapmadan aynı listeden geldiği
-		// için ikisinde de geçerli).
+		// için ikisinde de geçerli). Dünya kategorisi ana sayfa bölümlerinden kasıtlı
+		// çıkarıldı — site ana akım/dünya ağırlıklı görünmesin istendi, Dünya kendi
+		// arşiv sayfasında/RSS'te kalmaya devam eder, sadece ana sayfada bölüm açmaz.
 		$priority_slugs = array( 'siyaset', 'politika', 'spor', 'ekonomi' );
+		$excluded_slugs = array( 'dunya' );
 		$top_cats = array();
 		foreach ( array( 'siyaset', 'spor', 'ekonomi' ) as $slug ) {
 			foreach ( $all_cats as $cat ) {
@@ -43,7 +46,7 @@
 			if ( count( $top_cats ) >= 6 ) {
 				break;
 			}
-			if ( in_array( $cat->slug, $priority_slugs, true ) ) {
+			if ( in_array( $cat->slug, $priority_slugs, true ) || in_array( $cat->slug, $excluded_slugs, true ) ) {
 				continue;
 			}
 			$top_cats[] = $cat;
