@@ -109,7 +109,11 @@ function veng_default_og_image() {
 
 /** Google'ın arama sonucu snippet'inde kullandığı klasik meta description + canonical link. */
 function veng_meta_description_and_canonical() {
-	$description = get_bloginfo( 'name' ) . ' — ' . ( get_bloginfo( 'description' ) ?: 'Güncel haberler, son dakika gelişmeleri.' );
+	// Ana sayfa önceden sadece "Site Adı — Slogan" gösteriyordu (Google aramasında çok yavan
+	// görünüyordu) — bölgeyi/kapsamı anlatan, anahtar kelime içeren açıklama kullanıyoruz.
+	$description = is_front_page()
+		? 'Diyarbakır, Mardin, Van, Şanlıurfa, Batman, Hakkari, Şırnak, Siirt, Ağrı, Muş ve Bitlis başta olmak üzere Kürt coğrafyasından güncel haberler; Amedspor ve bölge kulüpleri, Türkiye ve dünya gündemi Veng Haber\'de.'
+		: get_bloginfo( 'name' ) . ' — ' . ( get_bloginfo( 'description' ) ?: 'Güncel haberler, son dakika gelişmeleri.' );
 	$url = home_url( add_query_arg( array(), $GLOBALS['wp']->request ?? '' ) );
 
 	if ( is_singular( array( 'post', 'makale' ) ) ) {
