@@ -85,11 +85,25 @@
 
 		<div class="footer-bottom">
 			<span>© <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>. Tüm hakları saklıdır.</span>
-			<span>Bu bir demo sitedir · Google News ve BİK uyumlu altyapı örneği</span>
 		</div>
 	</footer>
 
 	<button type="button" id="veng-back-to-top" aria-label="Başa dön" title="Başa dön">↑</button>
+
+	<nav class="mobile-tabbar" aria-label="Alt gezinme">
+		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="mobile-tabbar-item<?php echo is_front_page() ? ' is-active' : ''; ?>">
+			<span class="mobile-tabbar-icon">⌂</span><span>Ana Sayfa</span>
+		</a>
+		<button type="button" class="mobile-tabbar-item" id="veng-tabbar-categories">
+			<span class="mobile-tabbar-icon">☰</span><span>Kategoriler</span>
+		</button>
+		<button type="button" class="mobile-tabbar-item" id="veng-tabbar-search">
+			<span class="mobile-tabbar-icon">⌕</span><span>Ara</span>
+		</button>
+		<button type="button" class="mobile-tabbar-item" id="veng-tabbar-top">
+			<span class="mobile-tabbar-icon">↑</span><span>Yukarı</span>
+		</button>
+	</nav>
 
 	<?php wp_footer(); ?>
 </body>

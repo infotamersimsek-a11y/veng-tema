@@ -280,4 +280,25 @@ document.addEventListener('DOMContentLoaded', function () {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
+
+  // Mobil alt gezinme çubuğu: mevcut hamburger/arama tetikleyicilerini simüle eder,
+  // mantığı tekrar yazmak yerine zaten çalışan butonlara tıklama gönderir.
+  var tabbarCategories = document.getElementById('veng-tabbar-categories');
+  if (tabbarCategories && menuToggle) {
+    tabbarCategories.addEventListener('click', function () { menuToggle.click(); });
+  }
+  var tabbarSearch = document.getElementById('veng-tabbar-search');
+  if (tabbarSearch && searchBtn) {
+    tabbarSearch.addEventListener('click', function () {
+      searchBtn.click();
+      var input = document.querySelector('#veng-searchbox input');
+      if (input) { setTimeout(function () { input.focus(); }, 50); }
+    });
+  }
+  var tabbarTop = document.getElementById('veng-tabbar-top');
+  if (tabbarTop) {
+    tabbarTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 });
