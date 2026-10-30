@@ -240,7 +240,15 @@ function veng_handle_custom_routes() {
 
 	if ( 'sitemap' === $route ) {
 		header( 'Content-Type: application/xml; charset=utf-8' );
-		echo veng_build_sitemap();
+		// Her haberi yeniden sorgulayıp XML'i sıfırdan kuruyordu — her istek ~5 saniye
+		// sürüyordu (Googlebot/Search Console bunu "Getirilemedi" olarak işaretledi,
+		// crawl bütçesine ve indexlemeye zarar veriyordu). Artık önbellekleniyor.
+		$cached = get_transient( 'veng_sitemap_xml' );
+		if ( false === $cached ) {
+			$cached = veng_build_sitemap();
+			set_transient( 'veng_sitemap_xml', $cached, 30 * MINUTE_IN_SECONDS );
+		}
+		echo $cached;
 		exit;
 	}
 	if ( 'rss' === $route ) {
@@ -355,6 +363,14 @@ add_filter( 'redirect_canonical', 'veng_disable_canonical_redirect_for_routes' )
 function veng_xml_esc( $str ) {
 	return htmlspecialchars( $str, ENT_XML1 | ENT_QUOTES, 'UTF-8' );
 }
+
+/** Yeni/güncellenen/silinen yazı olunca sitemap önbelleğini temizler — yoksa 30 dk'ya kadar eski kalabilirdi. */
+function veng_clear_sitemap_cache() {
+	delete_transient( 'veng_sitemap_xml' );
+}
+add_action( 'save_post', 'veng_clear_sitemap_cache' );
+add_action( 'trashed_post', 'veng_clear_sitemap_cache' );
+add_action( 'deleted_post', 'veng_clear_sitemap_cache' );
 
 function veng_build_sitemap() {
 	$urls = array();
