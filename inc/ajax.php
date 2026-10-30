@@ -33,25 +33,6 @@ function veng_ajax_vote_poll() {
 add_action( 'wp_ajax_veng_vote_poll', 'veng_ajax_vote_poll' );
 add_action( 'wp_ajax_nopriv_veng_vote_poll', 'veng_ajax_vote_poll' );
 
-function veng_ajax_newsletter() {
-	check_ajax_referer( 'veng_nonce', 'nonce' );
-	$email = isset( $_POST['email'] ) ? sanitize_email( $_POST['email'] ) : '';
-	if ( ! is_email( $email ) ) {
-		wp_send_json_error( array( 'message' => 'Geçerli bir e-posta girin.' ), 400 );
-	}
-
-	$existing = get_page_by_title( $email, OBJECT, 'ne_kaydi' );
-	if ( ! $existing ) {
-		wp_insert_post( array(
-			'post_type'   => 'ne_kaydi',
-			'post_title'  => $email,
-			'post_status' => 'publish',
-		) );
-	}
-	wp_send_json_success();
-}
-add_action( 'wp_ajax_veng_newsletter', 'veng_ajax_newsletter' );
-add_action( 'wp_ajax_nopriv_veng_newsletter', 'veng_ajax_newsletter' );
 
 function veng_ajax_contact() {
 	check_ajax_referer( 'veng_nonce', 'nonce' );

@@ -129,23 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Bülten formu
-  var newsletterForm = document.getElementById('veng-newsletter-form');
-  if (newsletterForm) {
-    newsletterForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var email = newsletterForm.querySelector('input[name=email]').value;
-      var msgEl = newsletterForm.querySelector('.form-msg');
-      var body = new URLSearchParams({ action: 'veng_newsletter', nonce: VengData.nonce, email: email });
-      fetch(VengData.ajaxUrl, { method: 'POST', body: body })
-        .then(function (r) { return r.json(); })
-        .then(function (res) {
-          if (msgEl) msgEl.textContent = res.success ? 'Kaydınız alındı.' : (res.data && res.data.message) || 'Hata oluştu.';
-          if (res.success) newsletterForm.reset();
-        });
-    });
-  }
-
   // İletişim formu
   var contactForm = document.getElementById('veng-contact-form');
   if (contactForm) {

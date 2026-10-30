@@ -71,18 +71,6 @@
 			</div>
 		</div>
 
-		<div class="footer-grid" style="grid-template-columns:1fr;padding-top:0;">
-			<form id="veng-newsletter-form" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-				<div>
-					<strong style="font-size:14px;">Bültenimize Katılın</strong>
-					<div style="font-size:12px;color:var(--muted);">Günün önemli haberleri e-postanıza gelsin.</div>
-				</div>
-				<input type="email" name="email" required placeholder="E-posta adresiniz" style="flex:1;min-width:200px;border-radius:8px;border:1px solid var(--border);background:var(--bg);padding:8px 12px;color:var(--fg);" />
-				<button type="submit" class="btn">Abone Ol</button>
-				<span class="form-msg" style="font-size:12px;"></span>
-			</form>
-		</div>
-
 		<div class="footer-bottom">
 			<span>© <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>. Tüm hakları saklıdır.</span>
 		</div>
