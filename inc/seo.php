@@ -472,9 +472,9 @@ function veng_build_llms_txt() {
 	return <<<TXT
 # {$name}
 
-> {$name} Haber Yazılımı Demosu (WordPress)
+> Diyarbakır, Mardin, Van, Şanlıurfa, Batman, Hakkari, Şırnak, Siirt, Ağrı, Muş ve Bitlis başta olmak üzere Kürt coğrafyasından güncel haber, spor, ekonomi ve kültür-sanat yayını. Amedspor ve bölge kulüplerine, Türkiye ve dünya gündemine de yer verir.
 
-Bu site bir haber ve medya yönetim platformudur. Yayınlanan içerikler haber, makale, foto galeri, video galeri ve anket türlerini kapsar.
+Bu bir deneme/demo içerik değil, aktif yayın yapan bir bölgesel haber sitesidir. İçerikler haber, makale, foto galeri, video galeri ve anket türlerini kapsar.
 
 ## Ana Sayfa ve Keşif
 - Ana Sayfa: {$home}
@@ -491,6 +491,5 @@ Bu site bir haber ve medya yönetim platformudur. Yayınlanan içerikler haber, 
 
 ## Optional
 - robots.txt: {$home}robots.txt
-- ads.txt: {$home}ads.txt
 TXT;
 }
