@@ -44,6 +44,8 @@ function veng_customize_register( $wp_customize ) {
 		'description' => 'Reklam kodu (AdSense vb.) doluysa o gösterilir. Boşsa banner görseli kullanılır. İkisi de boşsa "Reklam verin" kutusu görünür.',
 		'priority'    => 31,
 	) );
+	$wp_customize->add_setting( 'veng_ad_home_default', array( 'default' => true, 'sanitize_callback' => 'rest_sanitize_boolean' ) );
+	$wp_customize->add_control( 'veng_ad_home_default', array( 'label' => 'Ana sayfa: temayla gelen hazır bannerı göster (Diyarbakır Büyükşehir Belediyesi)', 'section' => 'veng_ads', 'type' => 'checkbox' ) );
 	foreach ( array( 'home' => 'Ana sayfa (slider altı)', 'side' => 'Kenar çubuğu' ) as $slot => $slot_label ) {
 		$wp_customize->add_setting( 'veng_ad_' . $slot . '_code', array( 'default' => '', 'sanitize_callback' => 'veng_sanitize_ad_code' ) );
 		$wp_customize->add_control( 'veng_ad_' . $slot . '_code', array( 'label' => $slot_label . ' · Reklam kodu', 'section' => 'veng_ads', 'type' => 'textarea' ) );
