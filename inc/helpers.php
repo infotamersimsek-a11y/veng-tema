@@ -214,7 +214,47 @@ function veng_get_market_rates() {
  * kullanılıyor — ana sayfa slider altı + kenar çubuğu) ve kenar çubuğundaki mobilde
  * hiç görünmüyor ("mobilde çok olmasın" — 1 masaüstü + 1 mobil görünür slot kalıyor).
  */
-function veng_render_ad_slot( $extra_class = '' ) {
+function veng_render_ad_slot( $extra_class = '', $slot = 'home' ) {
+	$code  = trim( (string) get_theme_mod( 'veng_ad_' . $slot . '_code', '' ) );
+	$image = trim( (string) get_theme_mod( 'veng_ad_' . $slot . '_image', '' ) );
+	$link  = trim( (string) get_theme_mod( 'veng_ad_' . $slot . '_link', '' ) );
+
+	if ( '' !== $code ) {
+		?>
+		<div class="veng-ad-slot veng-ad-live <?php echo esc_attr( $extra_class ); ?>">
+			<span class="veng-ad-tag">Reklam</span>
+			<?php echo $code; // phpcs:ignore WordPress.Security.EscapeOutput -- yönetici tarafından girilen reklam kodu ?>
+		</div>
+		<?php
+		return;
+	}
+
+	if ( '' !== $image ) {
+		$img = '<img src="' . esc_url( $image ) . '" alt="Reklam" loading="lazy" decoding="async">';
+		?>
+		<div class="veng-ad-slot veng-ad-live <?php echo esc_attr( $extra_class ); ?>">
+			<span class="veng-ad-tag">Reklam</span>
+			<?php echo $link ? '<a href="' . esc_url( $link ) . '" target="_blank" rel="sponsored noopener">' . $img . '</a>' : $img; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+		</div>
+		<?php
+		return;
+	}
+
+	// Ana sayfa: boşken "reklam verin" daveti. Kenar çubuğu eski yer tutucuyu korur.
+	if ( 'home' === $slot ) {
+		$mail = get_theme_mod( 'veng_contact_email', 'info@venghaber.com' );
+		?>
+		<div class="veng-ad-slot veng-ad-empty <?php echo esc_attr( $extra_class ); ?>">
+			<span class="veng-ad-tag">Reklam</span>
+			<div class="veng-ad-cta">
+				<strong>Bu alanda reklamınız yayınlanabilir</strong>
+				<span>Bölgenin haber sitesinde markanızı öne çıkarın.</span>
+			</div>
+			<a class="veng-ad-btn" href="mailto:<?php echo esc_attr( antispambot( $mail ) ); ?>?subject=<?php echo rawurlencode( 'Reklam bilgi talebi' ); ?>">Reklam ver</a>
+		</div>
+		<?php
+		return;
+	}
 	?>
 	<div class="veng-ad-slot <?php echo esc_attr( $extra_class ); ?>">
 		<span class="veng-ad-slot-label">VENG RADYO</span>
@@ -369,7 +409,7 @@ function veng_render_sidebar() {
 	<aside style="display:flex;flex-direction:column;gap:20px;">
 		<?php veng_render_hourly_digest_widget(); ?>
 
-		<?php veng_render_ad_slot( 'veng-ad-slot-sidebar' ); ?>
+		<?php veng_render_ad_slot( 'veng-ad-slot-sidebar', 'side' ); ?>
 
 		<?php if ( $weather ) : ?>
 		<div class="card sidebar-hide-mobile">
