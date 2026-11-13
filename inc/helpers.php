@@ -240,36 +240,9 @@ function veng_render_ad_slot( $extra_class = '', $slot = 'home' ) {
 		return;
 	}
 
-	// Temayla gelen hazır banner (assets/ads). Özelleştir'den kapatılabilir; reklam kodu/görseli
-	// girilirse zaten yukarıda o gösterilir.
-	if ( 'home' === $slot && get_theme_mod( 'veng_ad_home_default', true ) && file_exists( get_template_directory() . '/assets/ads/home-banner-1600.jpg' ) ) {
-		$base  = get_template_directory_uri() . '/assets/ads/home-banner-';
-		$sizes = '(max-width: 900px) 100vw, 815px';
-		?>
-		<div class="veng-ad-slot veng-ad-banner <?php echo esc_attr( $extra_class ); ?>">
-			<span class="veng-ad-tag">Reklam</span>
-			<picture>
-				<source type="image/webp" srcset="<?php echo esc_url( $base . '800.webp' ); ?> 800w, <?php echo esc_url( $base . '1600.webp' ); ?> 1600w" sizes="<?php echo esc_attr( $sizes ); ?>">
-				<img src="<?php echo esc_url( $base . '1600.jpg' ); ?>" srcset="<?php echo esc_url( $base . '800.jpg' ); ?> 800w, <?php echo esc_url( $base . '1600.jpg' ); ?> 1600w" sizes="<?php echo esc_attr( $sizes ); ?>" width="1600" height="317" alt="Diyarbakır Büyükşehir Belediyesi — Medya Kütüphanesi ve Çalışma Salonu açıldı" loading="lazy" decoding="async">
-			</picture>
-		</div>
-		<?php
-		return;
-	}
-
-	// Ana sayfa: boşken "reklam verin" daveti. Kenar çubuğu eski yer tutucuyu korur.
+	// Ana sayfa slotu: reklam kodu/banner girilmediyse hiçbir şey gösterilmez. Kenar çubuğu eski
+	// yer tutucuyu korur.
 	if ( 'home' === $slot ) {
-		$mail = get_theme_mod( 'veng_contact_email', 'info@venghaber.com' );
-		?>
-		<div class="veng-ad-slot veng-ad-empty <?php echo esc_attr( $extra_class ); ?>">
-			<span class="veng-ad-tag">Reklam</span>
-			<div class="veng-ad-cta">
-				<strong>Bu alanda reklamınız yayınlanabilir</strong>
-				<span>Bölgenin haber sitesinde markanızı öne çıkarın.</span>
-			</div>
-			<a class="veng-ad-btn" href="mailto:<?php echo esc_attr( antispambot( $mail ) ); ?>?subject=<?php echo rawurlencode( 'Reklam bilgi talebi' ); ?>">Reklam ver</a>
-		</div>
-		<?php
 		return;
 	}
 	?>
