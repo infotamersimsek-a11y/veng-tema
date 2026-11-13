@@ -215,6 +215,14 @@ function veng_get_market_rates() {
  * hiç görünmüyor ("mobilde çok olmasın" — 1 masaüstü + 1 mobil görünür slot kalıyor).
  */
 function veng_render_ad_slot( $extra_class = '', $slot = 'home' ) {
+	// Özelleştir → Reklam Alanları: "göster" kapalıysa ya da bitiş tarihi geçtiyse hiçbir şey basılmaz.
+	if ( ! get_theme_mod( 'veng_ad_' . $slot . '_enabled', 'side' === $slot ) ) {
+		return;
+	}
+	$until = (string) get_theme_mod( 'veng_ad_' . $slot . '_until', '' );
+	if ( '' !== $until && wp_date( 'Y-m-d' ) > $until ) {
+		return;
+	}
 	$code  = trim( (string) get_theme_mod( 'veng_ad_' . $slot . '_code', '' ) );
 	$image = trim( (string) get_theme_mod( 'veng_ad_' . $slot . '_image', '' ) );
 	$link  = trim( (string) get_theme_mod( 'veng_ad_' . $slot . '_link', '' ) );

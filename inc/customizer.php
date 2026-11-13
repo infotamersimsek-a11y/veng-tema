@@ -8,6 +8,10 @@ function veng_sanitize_ad_code( $value ) {
 	return current_user_can( 'unfiltered_html' ) ? (string) $value : wp_kses_post( (string) $value );
 }
 
+function veng_sanitize_ad_date( $value ) {
+	return preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) $value ) ? (string) $value : '';
+}
+
 function veng_customize_register( $wp_customize ) {
 
 	$wp_customize->add_section( 'veng_site_settings', array(
@@ -41,10 +45,14 @@ function veng_customize_register( $wp_customize ) {
 	// o gösterilir; yoksa banner görseli + bağlantı; ikisi de boşsa "reklam verin" yer tutucusu.
 	$wp_customize->add_section( 'veng_ads', array(
 		'title'       => 'Reklam Alanları',
-		'description' => 'Reklam kodu (AdSense vb.) doluysa o gösterilir. Boşsa banner görseli kullanılır. İkisi de boşsa ana sayfada bu alan hiç görünmez.',
+		'description' => 'Reklam kodu (AdSense vb.) doluysa o gösterilir. Boşsa banner görseli kullanılır. Her alanın kendi "göster" düğmesi vardır; kapalıyken hiçbir şey görünmez.',
 		'priority'    => 31,
 	) );
 	foreach ( array( 'home' => 'Ana sayfa (slider altı)', 'side' => 'Kenar çubuğu' ) as $slot => $slot_label ) {
+		$wp_customize->add_setting( 'veng_ad_' . $slot . '_enabled', array( 'default' => 'side' === $slot, 'sanitize_callback' => 'rest_sanitize_boolean' ) );
+		$wp_customize->add_control( 'veng_ad_' . $slot . '_enabled', array( 'label' => $slot_label . ' · Reklam alanını GÖSTER (kapatınca girdiğin kod/görsel silinmez, tekrar açınca geri gelir)', 'section' => 'veng_ads', 'type' => 'checkbox' ) );
+		$wp_customize->add_setting( 'veng_ad_' . $slot . '_until', array( 'default' => '', 'sanitize_callback' => 'veng_sanitize_ad_date' ) );
+		$wp_customize->add_control( 'veng_ad_' . $slot . '_until', array( 'label' => $slot_label . ' · Bitiş tarihi (boşsa süresiz; bu tarihten sonra otomatik kalkar)', 'section' => 'veng_ads', 'type' => 'date' ) );
 		$wp_customize->add_setting( 'veng_ad_' . $slot . '_code', array( 'default' => '', 'sanitize_callback' => 'veng_sanitize_ad_code' ) );
 		$wp_customize->add_control( 'veng_ad_' . $slot . '_code', array( 'label' => $slot_label . ' · Reklam kodu', 'section' => 'veng_ads', 'type' => 'textarea' ) );
 		$wp_customize->add_setting( 'veng_ad_' . $slot . '_image', array( 'default' => '', 'sanitize_callback' => 'esc_url_raw' ) );
